@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import apiClient, { CanceledError} from "../services/api-client";
+import useData from "./useData";
 
 // export interface Platform {
 //   id: number;
@@ -15,44 +14,16 @@ import apiClient, { CanceledError} from "../services/api-client";
 //   metacritic: number;
 // }
 
-interface FetchGenresResponse {
-  count: number;
-  results: Genre[];
-}
+// interface FetchGenresResponse {
+//   count: number;
+//   results: Genre[];
+// }
 
-interface Genre {
+export interface Genre {
   id: number;
   name: string;
 }
 
-const useGenres = () => {
-    const [genres, setGenres] = useState<genre[]>([]);
-    const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false)
-  
-    useEffect(() => {
-      const controller =new AbortController();
-
-      setIsLoading(true);
-      apiClient.get<FetchGenresResponse>("/genres", { signal: controller.signal})
-        .then((res) => {
-          setGenres(res.data.results);
-          setIsLoading(false);
-        })
-        .catch(err => {
-          if (err instanceof CanceledError) return;
-          setError(err.message);
-          setIsLoading(false);
-        });
-
-        return () => controller.abort();
-    }, []);
-
-    return {
-      error,
-      genres,
-      isLoading
-    }
-}
+const useGenres = () => useData<Genre>('/genres');
 
 export default useGenres;
